@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link href="favicon.svg" rel="icon" type="image/png"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&family=Manrope:wght@400;600;700;900&display=swap"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mustache@latest/mustache.min.js"></script>
+    <script src="themes.js"></script>
+    <script src="data.js"></script>
+    <title>Thomas Coderson - FullStack Mouse Operator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dmgray: {
+                            0: data.theme.colors[0],
+                            '05': data.theme.colors[1],
+                            1: data.theme.colors[2],
+                            2: data.theme.colors[3],
+                            21: data.theme.colors[4],
+                            3: data.theme.colors[5],
+                        }
+                    },
+                    screens: {
+                        xs: '440px',
+                        mg: '992px',
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            font-size: 18px;
+            font-family: "Manrope", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .quicksand {
+            font-family: "Quicksand", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        .semibold {
+            font-family: "Manrope", sans-serif;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .bold {
+            font-family: "Manrope", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .black {
+            font-family: "Manrope", sans-serif;
+            font-weight: 900;
+            font-style: normal;
+        }
+
+        .exp p {
+            font-size: 16px;
+        }
+
+        .exp {
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        header {
+            animation: gradient 15s ease infinite;
+            position: relative;
+            overflow: hidden;
+            min-height: 427px;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .wave {
+            background: rgb(255 255 255 / 25%);
+            border-radius: 1000% 1000% 0 0;
+            position: absolute;
+            width: 250%;
+            height: 9em;
+            bottom: 0;
+            animation: wave 10s -3s linear infinite;
+            transform: translate3d(0, 0, 0);
+            opacity: 0.8;
+            left: 0;
+            z-index: 0;
+        }
+
+        @media (max-width: 992px) {
+            .wave {
+                bottom: -1rem;
+            }
+        }
+
+
+        .wave:nth-of-type(2) {
+            bottom: -1.25em;
+            animation: wave 18s linear reverse infinite;
+            opacity: 0.8;
+        }
+
+        .wave:nth-of-type(3) {
+            bottom: -2.5em;
+            animation: wave 20s -10s reverse infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes wave {
+            2% {
+                transform: translateX(1);
+            }
+
+            25% {
+                transform: translateX(-25%);
+            }
+
+            50% {
+                transform: translateX(-50%);
+            }
+
+            75% {
+                transform: translateX(-25%);
+            }
+
+            100% {
+                transform: translateX(1);
+            }
+        }
+
+        @media (max-width: 992px) {
+            #chevron {
+                animation: slide-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) infinite alternate both;
+            }
+        }
+
+        @-webkit-keyframes slide-bottom {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(15px);
+            }
+        }
+
+        @keyframes slide-bottom {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(15px);
+            }
+        }
+
+    </style>
+</head>
+<body class="container lg:mx-auto max-lg:max-w-[100vw] bg-dmgray-3 min-h-[100dvh] h-[100dvh] flex flex-col invisible">
+<div class="absolute right-2 top-2 gap-2 z-10 flex flex-col items-stretch opacity-40 hover:opacity-100">
+    <select id="theme-select">
+        <option value="default">Default Theme</option>
+        <option value="minimal">Minimal</option>
+        <option value="base">Base</option>
+    </select>
+    <select id="color-select">
+        <option value="default">Default Color</option>
+        <option value="mutedBlue">Muted Blue</option>
+        <option value="mutedRed">Muted Red</option>
+        <option value="mutedGreen">Muted Green</option>
+        <option value="mutedPurple">Muted Purple</option>
+        <option value="mutedOrange">Muted Orange</option>
+        <option value="mutedYellow">Muted Yellow</option>
+        <option value="mutedTeal">Muted Teal</option>
+        <option value="mutedPink">Muted Pink</option>
+        <option value="mutedBrown">Muted Brown</option>
+    </select>
+</div>
+<div id="output"></div>
+<script id="template" type="text/x-mustache-template">
+    <header id="gradient" class="w-full h-fit mg:h-[20rem] pb-14">
+        <div class="absolute w-full h-fit bottom-7">
+            {{#theme.waves}}
+            <div class="wave"></div>
+            {{/theme.waves}}
+        </div>
+        <div class="flex z-[1] relative max-mg:flex-col max-mg:gap-5 items-center justify-between h-full max-mg:px-3 max-mg:py-7 py-10">
+            <div class="flex justify-center mg:w-1/3">
+                <img src="/me.png" alt="{{name}}"
+                     class="rounded-{{#theme.photoCircle}}full{{/theme.photoCircle}}{{^theme.photoCircle}}xl{{/theme.photoCircle}} w-[9rem] h-[9rem] mg:w-[10rem] mg:h-[10rem] object-cover">
+            </div>
+            <div class="flex flex-col max-mg:text-center text-white grow gap-5 mg:pl-10">
+                <h1 class="font-thin max-mg:text-5xl text-7xl quicksand">{{name}}</h1>
+                <h1 class="font-bold max-mg:text-2xl text-3xl">{{position}}</h1>
+            </div>
+        </div>
+    </header>
+    <div class="grow relative">
+        <div class="absolute w-full flex flex-col mg:flex-row h-fit -top-[5rem] left-0">
+            <div class="w-full mg:w-1/3 max-mg:h-fit overflow-y-hidden">
+                {{#theme.sideChevron}}
+                <div class="w-full h-[5rem] overflow-hidden">
+                    <canvas id="chevron"></canvas>
+                </div>
+                {{/theme.sideChevron}}
+                {{^theme.sideChevron}}
+                <div class="w-full h-[2rem] overflow-hidden bg-dmgray-21"></div>
+                {{/theme.sideChevron}}
+                <aside
+                        class="bg-dmgray-21 w-full h-full max-mg:py-6 px-4 mg:px-7 flex items-center justify-start flex-col gap-7 max-mg:h-fit">
+                    <div class="flex flex-col gap-4 sm:max-mg:flex-row w-fit sm:max-mg:w-full sm:max-mg:justify-evenly">
+                        {{#location}}
+                        <div class="flex gap-5 items-center max-sm:w-fit">
+                            <div class="!p-0.5 !max-w-[40px] !max-h-[40px] rounded-full bg-dmgray-0">
+                                <svg width="36px" height="36px" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 21C15.5 17.4 19 14.1764 19 10.2C19 6.22355 15.866 3 12 3C8.13401 3 5 6.22355 5 10.2C5 14.1764 8.5 17.4 12 21Z"
+                                          class="stroke-dmgray-3" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z"
+                                          class="stroke-dmgray-3" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="text-dmgray-0 sm:w-full text-left hover:text-blue-400">{{location}}</div>
+                        </div>
+                        {{/location}}
+                        {{#email}}
+                        <div class="flex gap-5 items-center max-sm:w-fit">
+                            <div class="p-1.5 !max-w-[40px] !max-h-[40px] rounded-full bg-dmgray-0">
+                                <svg class="stroke-dmgray-3" stroke="currentColor" fill="none" stroke-width="2"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true"
+                                     height="1.5rem" width="1.5rem" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <a class="text-dmgray-0 sm:w-full text-left underline hover:text-blue-400"
+                               href="mailto:{{email.to}}?subject={{email.subject}}">{{email.to}}</a>
+                        </div>
+                        {{/email}}
+                        {{#phone}}
+                        <div class="flex gap-5 items-center max-sm:w-fit">
+                            <div class="p-2 !max-w-[40px] !max-h-[40px] rounded-full bg-dmgray-0">
+                                <svg class="stroke-dmgray-3" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                                     stroke-linecap="round" stroke-linejoin="round" height="1.3em" width="1.3em"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </div>
+                            <a class="text-dmgray-0 sm:w-full text-left underline hover:text-blue-400"
+                               href="tel:{{tel}}">{{phone}}</a>
+                        </div>
+                        {{/phone}}
+                        {{#github}}
+                        <div class="flex gap-5 items-center max-sm:w-fit">
+                            <div class="p-2 !max-w-[40px] !max-h-[40px] rounded-full bg-dmgray-0">
+                                <svg class="stroke-dmgray-3" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                                     stroke-linecap="round" stroke-linejoin="round" height="1.3em" width="1.3em"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                                </svg>
+                            </div>
+                            <a class="text-dmgray-0 sm:w-full text-left underline hover:text-blue-400"
+                               href="https://github.com/{{github}}" target="_blank">{{github}}</a>
+                        </div>
+                        {{/github}}
+                        {{#linkedin}}
+                        <div class="flex gap-5 items-center max-sm:w-fit">
+                            <div class="p-2 !max-w-[40px] !max-h-[40px] rounded-full bg-dmgray-0">
+                                <svg class="stroke-dmgray-3 fill-dmgray-3" stroke-width="0" viewBox="0 0 448 512"
+                                     height="1.3em" width="1.3em" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path>
+                                </svg>
+                            </div>
+                            <a class="text-dmgray-0 sm:w-full text-left underline hover:text-blue-400"
+                               href="https://www.linkedin.com/in/{{linkedin}}/" target="_blank">{{linkedin}}</a>
+                        </div>
+                        {{/linkedin}}
+                    </div>
+                    {{#education}}
+                    <div class="flex flex-col items-center mt-0 pl-0.5">
+                        <svg class="stroke-dmgray-0" stroke="currentColor" fill="none" stroke-width="1"
+                             viewBox="0 0 24 24"
+                             stroke-linecap="round" stroke-linejoin="round" height="3em" width="3em"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
+                            <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
+                        </svg>
+                        <p class="text-dmgray-0 -mt-1 w-full text-center text-lg mg:text-xl">{{education}}</p>
+                    </div>
+                    {{/education}}
+                    {{#languages.length}}
+                    <div class="flex flex-col gap-2 items-center mt-0 pl-0.5 w-full">
+                        <svg class="fill-dmgray-0" stroke="currentColor" fill="currentColor" stroke-width="0"
+                             viewBox="0 0 512 512" height="2em"
+                             width="2em" xmlns="http://www.w3.org/2000/svg">
+                            <path d="m478.33 433.6-90-218a22 22 0 0 0-40.67 0l-90 218a22 22 0 1 0 40.67 16.79L316.66 406h102.67l18.33 44.39A22 22 0 0 0 458 464a22 22 0 0 0 20.32-30.4zM334.83 362 368 281.65 401.17 362zm-66.99-19.08a22 22 0 0 0-4.89-30.7c-.2-.15-15-11.13-36.49-34.73 39.65-53.68 62.11-114.75 71.27-143.49H330a22 22 0 0 0 0-44H214V70a22 22 0 0 0-44 0v20H54a22 22 0 0 0 0 44h197.25c-9.52 26.95-27.05 69.5-53.79 108.36-31.41-41.68-43.08-68.65-43.17-68.87a22 22 0 0 0-40.58 17c.58 1.38 14.55 34.23 52.86 83.93.92 1.19 1.83 2.35 2.74 3.51-39.24 44.35-77.74 71.86-93.85 80.74a22 22 0 1 0 21.07 38.63c2.16-1.18 48.6-26.89 101.63-85.59 22.52 24.08 38 35.44 38.93 36.1a22 22 0 0 0 30.75-4.9z"></path>
+                        </svg>
+                        <div class="flex gap-3 flex-wrap">
+                            {{#languages}}
+                            <div class="rounded-lg px-2 relative overflow-hidden border-2 border-opacity-80 border-dmgray-0">
+                                <div class="absolute left-0 top-0 bg-dmgray-0 bg-opacity-80 w-{{#percent}}[{{percent}}%]{{/percent}}{{^percent}}full{{/percent}} h-full"></div>
+                                <span class="relative {{#percent}}text-white{{/percent}}{{^percent}}text-dmgray-3{{/percent}}"
+                                      {{#percent}}style="mix-blend-mode: exclusion;" {{/percent}}>{{name}}</span>
+                            </div>
+                            {{/languages}}
+                        </div>
+                    </div>
+                    {{/languages.length}}
+                </aside>
+            </div>
+            <main class="w-full mg:w-2/3 h-fit bg-white p-4 mg:p-7 flex flex-col gap-7">
+                <div class="w-full">
+                    <h3 class="font-bold text-xl text-dmgray-3">About Me</h3>
+                    <div class="border-b-[1px] border-dmgray-0 w-full mb-1"></div>
+                    <h2>{{aboutMe}}</h2>
+                </div>
+                <div class="flex flex-col items-start max-sm:gap-3 gap-2 w-full">
+                    <div class="w-full">
+                        <h3 class="font-bold text-xl text-dmgray-3">Technical Skills</h3>
+                        <div class="border-b-[1px] border-dmgray-0 w-full"></div>
+                    </div>
+                    {{#techSkills}}
+                    <div class="flex w-full gap-1 sm:gap-2 max-sm:flex-col">
+                        <span class="whitespace-nowrap w-full sm:w-fit mg:pr-5 relative">
+                            <span class="hidden sm:block invisible w-[{{skillsPadding}}]"></span>
+                            <span class="sm:absolute left-0 top-0 w-full max-sm:justify-center h-full flex items-center">{{title}}</span>
+                        </span>
+                        <div class="flex gap-1 sm:gap-2 flex-wrap w-full items-start max-sm:justify-center">
+                            {{#list}}
+                            <div class="rounded-lg max-sm:pb-0 max-sm:pb-0.5 max-sm:leading-none px-2 relative overflow-hidden border-2 border-dmgray-0">
+                                <span class="relative text-dmgray-3 max-sm:text-xs">{{.}}</span>
+                            </div>
+                            {{/list}}
+                        </div>
+                    </div>
+                    {{/techSkills}}
+                </div>
+                {{#softSkills.length}}
+                <div class="flex flex-col items-start gap-2 w-full">
+                    <div class="w-full">
+                        <h3 class="font-bold text-xl text-dmgray-3">Soft Skills</h3>
+                        <div class="border-b-[1px] border-dmgray-0 w-full"></div>
+                    </div>
+                    <div class="flex w-full gap-1 sm:gap-2 items-center max-sm:flex-col">
+                        <div class="flex gap-1 sm:gap-2 flex-wrap w-full items-start">
+                            {{#softSkills}}
+                            <div class="rounded-lg max-sm:pb-0 max-sm:pb-0.5 max-sm:leading-none px-2 relative overflow-hidden border-2 border-dmgray-0">
+                                <span class="relative text-dmgray-3 max-sm:text-xs">{{.}}</span>
+                            </div>
+                            {{/softSkills}}
+                        </div>
+                    </div>
+                </div>
+                {{/softSkills.length}}
+                <div class="flex flex-col items-start gap-4 w-full">
+                    <div class="w-full">
+                        <h3 class="font-bold text-xl text-dmgray-3">Experience</h3>
+                        <div class="border-b-[1px] border-dmgray-0 w-full"></div>
+                    </div>
+                    {{#experience}}
+                    <div class="flex w-full mt-1">
+                        <div class="flex flex-col w-full group">
+                            <div class="flex w-full justify-between text-dmgray-3 max-xs:flex-col">
+                                <span class="font-bold">{{position}}</span>
+
+                                <span class="max-xs:text-sm">
+                                    {{#company.url}}
+                                    <a
+                                            href="{{company.url}}"
+                                            target="_blank"
+                                            class="hover:text-blue-400 max-xs:text-sm underline">
+                                        {{company.name}}</a>{{/company.url}}{{^company.url}}{{company.name}}{{/company.url}}, {{company.location}}</span>
+                            </div>
+                            <div class="text-dmgray-05 mb-1 text-xs">{{duration}}</div>
+                            <div class="flex flex-col relative exp text-dmgray-3">
+                                <div class="px-2 exp-content">
+                                    {{#bulletPoints}}
+                                    <p>&#9679; {{.}}</p>
+                                    {{/bulletPoints}}
+                                    {{#description.length}}
+                                    <div class="show-more text-xs text-dmgray-05 group-hover:block cursor-pointer">
+                                        Show More
+                                    </div>
+                                    {{/description.length}}
+                                </div>
+                                {{#description.length}}
+                                <div class="hidden exp-content">
+                                    <p>{{description}}</p>
+                                </div>
+                                {{/description.length}}
+                            </div>
+                        </div>
+                    </div>
+                    {{/experience}}
+                </div>
+            </main>
+        </div>
+    </div>
+</script>
+
+<script>
+    function renderTemplate(info) {
+        const template = document.getElementById('template').innerHTML;
+        const output = Mustache.render(template, info);
+        document.getElementById('output').innerHTML = output;
+    }
+
+    renderTemplate(data);
+
+    function update(info) {
+        if (info.theme.headerGradient) {
+            document.getElementById('gradient').style.background = `linear-gradient(-45deg, ${info.theme.headerGradient.join(', ')}) 0 0 / 400% 400%`;
+        } else if (info.theme.headerSolidColor) {
+            document.getElementById('gradient').style.background = info.theme.headerSolidColor;
+        } else {
+            console.log(info.theme.colors[1]);
+            document.getElementById('gradient').style.background = info.theme.colors[1];
+        }
+
+        if (info.theme.sideChevron && !info.theme.sideChevron.animateSm) {
+            document.getElementById('chevron').style.animation = 'none';
+        }
+
+        draw(info);
+        window.addEventListener('resize', () => draw(info));
+
+        document.querySelectorAll('.show-more').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.target.closest('.exp').querySelectorAll('.exp-content').forEach(c => {
+                    c.classList.toggle('hidden')
+                })
+            })
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.body.classList.remove('invisible');
+        update(data);
+        document.getElementById('theme-select').addEventListener('change', (e) => {
+            data = {
+                ...data,
+                theme: {
+                    ...themes[e.target.value],
+                    colors: data.theme.colors,
+                }
+            }
+            data.theme.waves = data.theme.waves && data.theme.waves > 0 ? Array.from({length: data.theme.waves}, (_, i) => i) : [];
+            renderTemplate(data);
+            update(data);
+        });
+        document.getElementById('color-select').addEventListener('change', (e) => {
+            data = {
+                ...data,
+                theme: {
+                    ...data.theme,
+                    colors: colors[e.target.value],
+                }
+            }
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            dmgray: {
+                                0: data.theme.colors[0],
+                                '05': data.theme.colors[1],
+                                1: data.theme.colors[2],
+                                2: data.theme.colors[3],
+                                21: data.theme.colors[4],
+                                3: data.theme.colors[5],
+                            }
+                        },
+                        screens: {
+                            xs: '440px',
+                            mg: '992px',
+                        },
+                    },
+                },
+            }
+            renderTemplate(data);
+            update(data);
+        });
+    });
+
+    function draw(info) {
+        const canvas = document.getElementById("chevron");
+        if (canvas?.getContext) {
+            const cw = canvas.parentElement.getBoundingClientRect().width + (window.innerWidth < 768 ? 10 : 2);
+            const ch = canvas.parentElement.getBoundingClientRect().height;
+            canvas.width = cw;
+            canvas.height = ch;
+            const ctx = canvas.getContext("2d");
+            const path = new Path2D();
+            path.moveTo(0, 0);
+            path.lineTo((cw / 2), ch * 0.7);
+            path.lineTo(cw, 0);
+            path.lineTo(cw, ch);
+            path.lineTo(0, ch);
+            ctx.fillStyle = info.theme.colors[4];
+            ctx.fill(path);
+        }
+    }
+</script>
+</body>
+</html>
